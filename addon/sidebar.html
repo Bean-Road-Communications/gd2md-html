@@ -1,0 +1,291 @@
+<!-- sidebar.html -->
+
+<!--
+Copyright 2020 Google LLC
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!-- See this stylesheet for the class names we're using. -->
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons.css">
+
+<!-- For hidden button styling (subtle to a fault). -->
+<style>
+input[type="button"].invisible {background: transparent;border: none;font-size:0;}
+</style>
+
+<!-- This HTML file displays the sidebar on the client browser. -->
+<style>
+.mono {
+    font-family:"Courier New", Courier, monospace;
+    font-size:small;
+}
+</style>
+
+<style>
+/* Button style for link. */
+a.gdcButton {
+/*
+align-items:flex-start;
+background-attachment:scroll;
+background-clip:border-box;
+background-color:rgba(0, 0, 0, 0);
+background-image:-webkit-linear-gradient(top, rgb(77, 144, 254), rgb(71, 135, 237));
+*/
+background-color: #008000;
+border-style: solid;
+border-width: 1px;
+border-radius: 2px;
+border-color: #008000;
+
+box-shadow:none;
+box-sizing:border-box;
+color:rgb(255, 255, 255);
+cursor:default;
+display:inline-block;
+font-family:arial, sans-serif;
+font-size:11px;
+font-stretch:100%;
+font-style:normal;
+
+font-weight:700;
+height:28.9941px;
+letter-spacing:normal;
+line-height:27px;
+margin-bottom:0px;
+margin-left:0px;
+margin-right:0px;
+margin-top:0px;
+min-width:72px;
+
+padding-bottom:0px;
+padding-left:8px;
+padding-right:8px;
+padding-top:0px;
+text-align:center;
+text-decoration: none;
+text-indent:0px;
+text-rendering:auto;
+text-shadow:none;
+text-transform:none;
+user-select:none;
+white-space:nowrap;
+width:72.3633px;
+word-spacing:0px;
+writing-mode:horizontal-tb;
+-webkit-appearance:none;
+-webkit-rtl-ordering:logical;
+-webkit-border-image:none;
+}
+</style>
+<a target="_blank" title="Donate for social justice!" class="gdcButton" href="https://www.buymeacoffee.com/docstomarkdown"> Donate</a>
+
+
+<!-- Top of sidebar UI elements. -->
+<input type="button" class="blue" value="Markdown" onclick="markdown()">
+<input type="button" class="blue" value="HTML" onclick="html()">
+
+<!--
+<input type="button" class="blue" value="Help" onclick="help()">
+-->
+
+<p>
+
+<!--
+<input class="invisible" type="button" onclick="html()" value="test">
+-->
+
+<!-- Options. -->
+<label><input type="checkbox" id="italic_bold_underscores">
+_/__ for italic/bold (*/** default)
+</label>
+<br>
+<label>
+<input type="checkbox" id="demote_headings">
+Demote headings (H1 &rarr; H2, etc.)
+</label>
+<br>
+<label>
+<input type="checkbox" id="html_headings">
+Use HTML headings/IDs
+</label>
+<br>
+<label>
+<input type="checkbox" id="wrap_html">
+Wrap HTML
+</label>
+<br>
+<label>
+<input type="checkbox" id="render_html_tags">
+Render HTML tags
+</label>
+<br>
+
+<!-- Collapsing suppress_info and reckless_mode for now.
+<label>
+<input type="checkbox" id="suppress_info">
+Suppress info comments
+</label><br>
+-->
+
+<label>
+<input type="checkbox" id="reckless_mode">
+Reckless mode (no info or inline alerts)
+</label>
+
+<!-- Docs, bug link. -->
+<br>
+<div style="text-align: left;"> 
+<a target="_blank" onclick="help()">Help</a> |
+<a target="_blank" href="https://github.com/evbacher/gd2md-html/wiki">Docs</a> |
+<a target="_blank" href="https://github.com/evbacher/gd2md-html/issues">Bugs</a> |
+<a target="_blank" href="https://groups.google.com/g/gd2md-html">Questions</a> |
+<a target="_blank" href="https://github.com/evbacher/gd2md-html/wiki/news">News</a>
+</div>
+
+<!-- Text area for initial instructions and output. -->
+<textarea id="text" name="" class=mono rows=40 cols=32 border=none>
+</textarea>
+
+<script>
+var helpText = `
+Choose Markdown or HTML (or Donate!).
+
+* Default: convert entire doc.
+* Select text to limit scope.
+
+For more details, use the Docs link above.
+
+If you have questions for the Docs to Markdown community, use the Questions link above.`
+;
+   
+  function help() {
+    var text = document.getElementById('text');
+    text.value = helpText;
+  }
+  
+  // Set help text in textarea.
+  help();
+
+// Client-side JavaScript that initiates communication with the
+// server and handles messages from the server.
+  
+  // Config object to send to the server. This object contains
+  // any settings that we want to send from the UI.
+  // (But do not put a function in this object, since we're sending it
+  // to the server, and the server won't accept such an object.)
+  var config = config || {};
+  
+  // Set config options for each conversion run.
+  var setConfig = function() {  
+    // Default settings.
+    config.italicBoldUnderscores = false;
+    config.htmlHeadings = false;
+    config.zipImages = false;
+    config.demoteHeadings = false;
+    config.wrapHTML = false;
+    config.renderHTMLTags = false;
+    config.suppressInfo = false;
+    config.recklessMode = false;
+
+    // Config settings from UI.
+    if (document.getElementById('italic_bold_underscores').checked) {
+      config.italicBoldUnderscores = true;
+    }
+    if (document.getElementById('demote_headings').checked) {
+      config.demoteHeadings = true;
+    }
+    if (document.getElementById('html_headings').checked) {
+      config.htmlHeadings = true;
+    }
+    if (document.getElementById('wrap_html').checked) {
+      config.wrapHTML = true;
+    }
+    if (document.getElementById('render_html_tags').checked) {
+      config.renderHTMLTags = true;
+    }
+
+    /* Collapsing suppress_info and reckless_mode
+    if (document.getElementById('suppress_info').checked) {
+      config.suppressInfo = true;
+    }
+    */
+
+    if (document.getElementById('reckless_mode').checked) {
+      config.recklessMode = true;
+    }
+};
+    
+  // Make the calls to the server, and send some callbacks for
+  // the server to call when the conversion is done.
+  
+  // Markdown conversion. Calls the server and runs the Markdown conversion with config.
+  function markdown() {  
+    setConfig();
+    var text = document.getElementById('text');
+    text.value = 'Converting text to Markdown...';
+    text.value += '\n\n * Your output will appear here.';
+    
+    // Call the main add-on function (convertX()) on the server.
+    // We also send the names of callback functions to call in case of
+    // success or error.
+    google.script.run
+      .withSuccessHandler(displayServerMessage)
+      .withFailureHandler(displayServerError)
+      .convertToMarkdown(config);
+  }
+  
+  // HTML conversion. Calls the server and runs the HTML conversion with config.
+  function html() {
+    setConfig();
+    var text = document.getElementById('text');
+    text.value = 'Converting text to HTML...';
+    text.value += '\n\n * Your output will appear here.';
+    
+    google.script.run
+      .withSuccessHandler(displayServerMessage)
+      .withFailureHandler(displayServerError)
+      .convertToHTML(config);
+  }
+
+
+// These are callback functions that we pass to the server.
+// We pass one for a successful operation and one for failure.
+  
+  // Whatever the server returns is the serverMessage parameter.
+  function displayServerMessage(serverMessage) {    
+    // Show the server message in the text area.
+    var text = document.getElementById('text');
+    text.value = serverMessage;
+    // Save the result to the clipboard (and add an error message if the write fails).
+    // navigator.clipboard.writeText() returns a promise that we need to deal with.
+    navigator.clipboard.writeText(text.value).then(clipSuccess, clipError);
+  }
+  
+  // Whatever the server returns is the serverError parameter.
+  function displayServerError(serverError) {
+    var text = document.getElementById('text');
+    text.value = serverError;
+  }
+  
+  // Test to see the result of the Promise from writing to the clipboard.
+  function clipSuccess(result) {
+    // All is well: notify for now until everyone gets used to it.
+    // text.value = '<!-- Output copied to clipboard! -->\n\n' + text.value;
+  }
+  function clipError(error) {
+    var text = document.getElementById('text');
+    // See https://bugs.chromium.org/p/chromium/issues/detail?id=1074489
+    // Don't bother people with error message: they'll need to cut and paste output as usual.
+    //text.value = '<!-- Output not copied to clipboard: See issue 1074489 at bugs.chromium.org -->\n\n' + text.value;
+    text.value = '<!-- Copy and paste the converted output. -->\n\n' + text.value;
+  }
+  
+</script>
