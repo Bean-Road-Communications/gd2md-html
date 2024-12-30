@@ -53,7 +53,7 @@ The goal is to minimize the intrusiveness of Docs to Markdown. While it would be
 
 <h2 id="getting-the-source-to-docs-to-markdown">Getting the source to Docs to Markdown</h2>
 
-*   The source code to Docs to Markdown is in the `addon/` directory at [https://github.com/evbacher/gd2md-html](https://github.com/evbacher/gd2md-html). Fork the gd2md-html project into your own repository.
+*   The source code to Docs to Markdown is in the `addon/` directory at [https://github.com/Bean-Road-Communications/gd2md-html](https://github.com/evbacher/gd2md-html). Fork the gd2md-html project into your own repository.
 
 <h2 id="modifying-docs-to-markdown-code">Modifying Docs to Markdown code</h2>
 
