@@ -8,6 +8,9 @@ For more information, please read [CONTRIBUTING.md](CONTRIBUTING.md) and [dev.md
 
 Docs to Markdown lets you use Google Docs' editing, formatting, and collaboration tools before you publish to a Markdown or HTML platform. Docs to Markdown also lets you select and convert part of a Google Doc.
 
+This repository contains the basic functionality of Docs to Markdown, starting with version 1.0β40 of the code.
+It will receive updates and bug fixes over time.
+
 Docs to Markdown requires minimal permissions: it will ask for permission to access the current Doc (to convert it) and permission to create a sidebar (the user interface). It requires no other permissions.
 
 Use Google Docs styles for headings (Heading 1, Heading 2, etc.) so that Docs to Markdown can convert them properly to Markdown or HTML heading styles. If you just make them bold and large, they will convert as normal paragraphs.
